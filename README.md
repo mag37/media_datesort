@@ -20,5 +20,13 @@ file_types = (".jpeg", ".jpg", ".png", ".mp4", ".dng")
 no_date_dir = "NoDate" # name of the directory to store no-dated images
 date_separator = "-" # character to separate dates, eg. 2023-01-01 or 2023.01.01 DONT use slashes
 ```
+To change the final subdirectory layout from `/2023/09/2023-09-01/image.jpg` to `/2023/09/01/image.jpg` edit this line:
+```python
+# from /YYYY/MM/YYYY-MM-DD/image.jpg:
+output_dir = os.path.join(output_path, date_list[0], date_list[1], date_stamp)
+# to /YYYY/MM/DD/image.jpg:
+output_dir = os.path.join(output_path, date_list[0], date_list[1], date_list[2])
+
+```
 
 
