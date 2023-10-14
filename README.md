@@ -1,10 +1,10 @@
 ## A script sorting images based on Exif-date into dated subdirectories, like `Pictures/2023/09/2023-09-01/image.jpg`.
 
 ## Features:
-Crawls all subdirectories of the input-source, grabs exif-data from each file and copies it to a path based on the extracted date.   
-If two files got the same name - compares the file contents and skips if its the same, adds a suffix if its not.   
-If the date cant be decided - copies the file to a defined "no_date_dir" to be sorted manually.  
-Logs everything to a `debug.log`.
+- Crawls all subdirectories of the input-source, grabs exif-data from each file and copies it to a path based on the extracted date.   
+- If two files got the same name - compares the file contents and skips if its the same, adds a suffix if its not.   
+- If the date cant be decided - copies the file to a defined "no_date_dir" to be sorted manually.  
+- Logs everything to a `debug.log`.
 
 ## Dependencies:
 - Python3
@@ -29,4 +29,6 @@ output_dir = os.path.join(output_path, date_list[0], date_list[1], date_list[2])
 
 ```
 
-
+### Extras:
+Started working on some kind of filename-date-extraction but before I started validating the dates, I realised without a defined pattern and some rules, many dates will be valid but wrong.   
+For another day..
