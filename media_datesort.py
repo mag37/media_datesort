@@ -55,7 +55,8 @@ def date_and_copy(file_path):
             # strip and reformat date from "2023:08:01 10:18:45" to "2023-08-01"
             date_stamp = str(exif_data["EXIF DateTimeOriginal"])[:10].replace(":", date_separator) 
             date_list = date_stamp.split(date_separator)
-            # Create full path of subdirectories ex: 2023/08/2023-08-01
+            # Create full path of subdirectories ex: 2023/08/2023-08-01/image.jpg
+            # Change date_stamp to date_list[2] to have the layout: 2023/08/01/image.jpg
             output_dir = os.path.join(output_path, date_list[0], date_list[1], date_stamp)
         except:
             # if no date-exif, copy file to "no-date dir"
