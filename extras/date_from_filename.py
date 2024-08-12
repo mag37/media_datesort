@@ -1,24 +1,26 @@
 import re
-def extract_date(filename):
-    date_pattern = re.compile(r'\d{2,4}[-_.]\d{2}[-_.]\d{2,4}')
-    match = date_pattern.search(filename)
-    if match:
-        return match.group()
-    else:
-        return None
-
-filename = 'my_report_2022-03-21.pdf'
-date = extract_date(filename)
-
-if date:
-    print(f'Date found in filename: {date}')
-else:
-    print('No valid date found in filename.')
-
-
-# Version 2
-
 from datetime import datetime
+
+## Version 1
+# def extract_date(filename):
+#     date_pattern = re.compile(r'\d{2,4}[-_.]\d{2}[-_.]\d{2,4}')
+#     match = date_pattern.search(filename)
+#     if match:
+#         return match.group()
+#     else:
+#         return None
+
+# filename = 'my_report_2022-03-21.pdf'
+# date = extract_date(filename)
+
+# if date:
+#     print(f'Date found in filename: {date}')
+# else:
+#     print('No valid date found in filename.')
+
+
+## Version 2
+
 
 def likely_date_format(filename):
     date_formats = ['%y%m%d', '%Y%m%d', '%d%m%y', '%d%m%Y']
@@ -33,7 +35,7 @@ def likely_date_format(filename):
                 pass
     return None
 
-files = ["file1_230711.jpg", "file2_20230821.jpg", "file3-070923.jpg", "file4-990999.jpg"]
+files = ["file1_230711.jpg", "file2_20230821.jpg", "file3-070923.jpg", "file4-990999.jpg", "20231023_111211_946_img.jpg", "20230804_203421_960_img.jpg"]
 for file in files:
     print(file)
     print(likely_date_format(file))
