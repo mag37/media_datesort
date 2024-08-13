@@ -1,6 +1,13 @@
 import re
 from datetime import datetime
 
+# Add this to main script with sys.argv?
+# import sys
+# if sys.argv[1] == "nodate":
+#     runThisBit
+# else:
+#     runMainBit
+
 def likely_date_format(filename):
     date_formats = ['%y%m%d', '%Y%m%d', '%d%m%y', '%d%m%Y', '%y-%m-%d', '%Y-%m-%d', '%d-%m-%y', '%d-%m-%Y', '%y.%m.%d', '%Y.%m.%d', '%d.%m.%y', '%d.%m.%Y']
     date_regex = [r'\d{6,8}', r'\d{2,4}-\d{2}-\d{2}', r'\d{2,4}\.\d{2}\.\d{2}']
