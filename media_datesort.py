@@ -6,14 +6,7 @@ import logging
 import sys
 import re
 from datetime import datetime
-
-# User parameters:
-input_path = "./Testing/Input"
-output_path = "./Testing/Output"
-file_types = (".jpeg", ".jpg", ".png", ".dng")
-no_date_dir = "NoDate" # name of the directory to store no-dated images
-unsortable_dir = "Unsortables"
-date_separator = "-" # character to separate dates, eg. 2023-01-01 or 2023.01.01 DONT use slashes
+import settings # settings file, adjust there!
 
 # Logging format, handlers to write to file and console
 logging.basicConfig(
@@ -27,12 +20,12 @@ logging.basicConfig(
         )
 
 # Check user-defined paths:
-if not os.path.exists(input_path):
+if not os.path.exists(settings.input_path):
     print("Input directory does not exist, quitting")
     exit()
-if not os.path.exists(output_path):
-    print(f"Output directory does not exist - creating it @ {output_path}")
-    os.mkdir(output_path)
+if not os.path.exists(settings.output_path):
+    print(f"Output directory does not exist - creating it @ {settings.output_path}")
+    os.mkdir(settings.output_path)
 
 def copy_file(src, dst):
     try:
@@ -72,15 +65,15 @@ def date_and_copy(file_path):
             # grab exif data:
             exif_data = exifread.process_file(f, details=False, stop_tag="DateTimeOriginal")
             # strip and reformat date from "2023:08:01 10:18:45" to "2023-08-01"
-            date_stamp = str(exif_data["EXIF DateTimeOriginal"])[:10].replace(":", date_separator) 
-            date_list = date_stamp.split(date_separator)
+            date_stamp = str(exif_data["EXIF DateTimeOriginal"])[:10].replace(":", settings.date_separator) 
+            date_list = date_stamp.split(settings.date_separator)
             # Create full path of subdirectories ex: 2023/08/2023-08-01/image.jpg
             # Change date_stamp to date_list[2] to have the layout: 2023/08/01/image.jpg
-            output_dir = os.path.join(output_path, date_list[0], date_list[1], date_stamp)
+            output_dir = os.path.join(settings.output_path, date_list[0], date_list[1], date_stamp)
         except:
             # if no date-exif, copy file to "no-date dir"
-            output_dir = os.path.join(output_path, no_date_dir)
-            logging.warning(f"No exif-data on file {filename}. Copying to {no_date_dir}")
+            output_dir = os.path.join(settings.output_path, settings.no_date_dir)
+            logging.warning(f"No exif-data on file {filename}. Copying to {settings.no_date_dir}")
 
         # Create new copy+unique function
         process_file(output_dir, file_path)
@@ -93,7 +86,7 @@ def likely_date_format(file_path):
     regex = r'|'.join(date_regex)
     date_pattern = re.search(regex, filename)
     # setting placeholder dir if no match
-    output_dir = os.path.join(output_path, unsortable_dir)
+    output_dir = os.path.join(settings.output_path, settings.unsortable_dir)
     if date_pattern: # to check if pattern is found, else return None
         match = date_pattern.group(0)
         for format in date_formats:
@@ -102,9 +95,9 @@ def likely_date_format(file_path):
                 if match != datetime.strptime(match, format).strftime(format):
                     raise ValueError
                 print(f"Match: {match}, Format: {format}")
-                date_stamp = datetime.strptime(match, format).strftime(f"%Y{date_separator}%m{date_separator}%d")
-                date_list = date_stamp.split(date_separator)
-                output_dir = os.path.join(output_path, date_list[0], date_list[1], date_stamp)
+                date_stamp = datetime.strptime(match, format).strftime(f"%Y{settings.date_separator}%m{settings.date_separator}%d")
+                date_list = date_stamp.split(settings.date_separator)
+                output_dir = os.path.join(settings.output_path, date_list[0], date_list[1], date_stamp)
                 break # break to not interate on all possible matches
             except ValueError:
                 pass # Skip if not valid date and try next
@@ -114,18 +107,18 @@ def likely_date_format(file_path):
 if len(sys.argv) > 1:
     if sys.argv[1] == "dateguess":
         # Iterate over all files and subdirectories in no-date-dir for 2nd guessing
-        for root, dirs, files in os.walk(os.path.join(output_path, no_date_dir)):
+        for root, dirs, files in os.walk(os.path.join(settings.output_path, settings.no_date_dir)):
             for file in files:
                 # check extension - "lower" to be case-insensitive
-                if file.lower().endswith(file_types):
+                if file.lower().endswith(settings.file_types):
                     likely_date_format(os.path.join(root, file))
     else:
         print("Help: Use argument 'dateguess' to try to grab dates from filenames")
   
 else:
     # Iterate over all files and subdirectories
-    for root, dirs, files in os.walk(input_path):
+    for root, dirs, files in os.walk(settings.input_path):
         for file in files:
             # check extension - "lower" to be case-insensitive
-            if file.lower().endswith(file_types):
+            if file.lower().endswith(settings.file_types):
                 date_and_copy(os.path.join(root, file))
