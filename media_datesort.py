@@ -34,8 +34,7 @@ def copy_file(src, dst):
     except Exception as e:
         logging.error(f"Skipping file: {e}")
 
-# function to make unique names
-def unique_filename(dst):
+def unique_filename(dst): # function to make a unique filename by adding number suffix
     suffix = 0
     base, ext = os.path.splitext(dst)
     while os.path.exists(dst):
@@ -71,11 +70,9 @@ def date_and_copy(file_path):
             # Change date_stamp to date_list[2] to have the layout: 2023/08/01/image.jpg
             output_dir = os.path.join(settings.output_path, date_list[0], date_list[1], date_stamp)
         except:
-            # if no date-exif, copy file to "no-date dir"
+            # if no date-exif, copy file to "no_date_dir"
             output_dir = os.path.join(settings.output_path, settings.no_date_dir)
             logging.warning(f"No exif-data on file {filename}. Copying to {settings.no_date_dir}")
-
-        # Create new copy+unique function
         process_file(output_dir, file_path)
 
 def likely_date_format(file_path):
@@ -98,9 +95,11 @@ def likely_date_format(file_path):
                 date_stamp = datetime.strptime(match, format).strftime(f"%Y{settings.date_separator}%m{settings.date_separator}%d")
                 date_list = date_stamp.split(settings.date_separator)
                 output_dir = os.path.join(settings.output_path, date_list[0], date_list[1], date_stamp)
-                break # break to not interate on all possible matches
+                break # break on first date match
             except ValueError:
-                pass # Skip if not valid date and try next
+                pass # Skip if not valid date and try next date format
+    else:
+        logging.warning(f"No date matches in {filename}. Copying to {settings.unsortable_dir}")
     process_file(output_dir, file_path)
 
 
