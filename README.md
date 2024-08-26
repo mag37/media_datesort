@@ -38,8 +38,8 @@ pip install -r requirements.txt
 ```
 Windows:
 ```powershell
-env/Scripts/Activate.ps1 //Powershell
-env/Scripts/activate.bat //CMD
+venv/Scripts/Activate.ps1 //Powershell
+venv/Scripts/activate.bat //CMD
 ```
 
 Run it with `python3 media_datesort.py`
