@@ -57,7 +57,7 @@ def process_file(output_dir, file_path):
     else:
         copy_file(file_path, dst)
 
-def date_and_copy(file_path):
+def exif_date(file_path):
     with open(file_path, "rb") as f:
         filename = os.path.basename(file_path)
         try:
@@ -69,17 +69,17 @@ def date_and_copy(file_path):
             # Create full path of subdirectories ex: 2023/08/2023-08-01/image.jpg
             # Change date_stamp to date_list[2] to have the layout: 2023/08/01/image.jpg
             output_dir = os.path.join(settings.output_path, date_list[0], date_list[1], date_stamp)
-        except:
+        except Exception:
             # if no date-exif, copy file to "no_date_dir"
             output_dir = os.path.join(settings.output_path, settings.no_date_dir)
             logging.warning(f"No exif-data on file {filename}. Copying to {settings.no_date_dir}")
         process_file(output_dir, file_path)
 
-def likely_date_format(file_path):
+def guess_date(file_path):
     filename = os.path.basename(file_path)
     # Order by most likely as first match will be used
     date_formats = ['%y%m%d', '%Y%m%d', '%y-%m-%d', '%Y-%m-%d', '%y.%m.%d', '%Y.%m.%d', '%d%m%y', '%d%m%Y', '%d-%m-%y', '%d-%m-%Y', '%d.%m.%y', '%d.%m.%Y']
-    date_regex = [r'\d{6,8}', r'\d{2,4}-\d{2}-\d{2}', r'\d{2,4}\.\d{2}\.\d{2}']
+    date_regex = [r'\d{6,8}', r'\d{2,4}-\d{2}-\d{2,4}', r'\d{2,4}\.\d{2}\.\d{2,4}']
     regex = r'|'.join(date_regex)
     date_pattern = re.search(regex, filename)
     # setting placeholder dir if no match
@@ -104,13 +104,13 @@ def likely_date_format(file_path):
 
 
 if len(sys.argv) > 1:
-    if sys.argv[1] == "dateguess":
+    if sys.argv[1] == "guess":
         # Iterate over all files and subdirectories in no-date-dir for 2nd guessing
         for root, dirs, files in os.walk(os.path.join(settings.output_path, settings.no_date_dir)):
             for file in files:
                 # check extension - "lower" to be case-insensitive
                 if file.lower().endswith(settings.file_types):
-                    likely_date_format(os.path.join(root, file))
+                    guess_date(os.path.join(root, file))
     else:
         print("Help: Use argument 'dateguess' to try to grab dates from filenames")
   
@@ -120,4 +120,4 @@ else:
         for file in files:
             # check extension - "lower" to be case-insensitive
             if file.lower().endswith(settings.file_types):
-                date_and_copy(os.path.join(root, file))
+                exif_date(os.path.join(root, file))
