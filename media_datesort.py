@@ -57,6 +57,15 @@ def process_file(output_dir, file_path):
     else:
         copy_file(file_path, dst)
 
+def removed_nodate_file(file_path):
+    filename = os.path.basename(file_path)
+    try:
+        os.rm(filename)
+        logging.info(f"Removed successfully guessed file {filename}")
+    except Exception as e:
+        logging.error(f"Could not remove NoDate file: {e}")
+
+
 def exif_date(file_path):
     with open(file_path, "rb") as f:
         filename = os.path.basename(file_path)
@@ -84,6 +93,7 @@ def guess_date(file_path):
     date_pattern = re.search(regex, filename)
     # setting placeholder dir if no match
     output_dir = os.path.join(settings.output_path, settings.unsortable_dir)
+    guessed_output = os.path.join(settings.output_path, settings.unsortable_dir, settings.guessed_dir)
     if date_pattern: # to check if pattern is found, else return None
         match = date_pattern.group(0)
         for format in date_formats:
@@ -100,7 +110,7 @@ def guess_date(file_path):
                 pass # Skip if not valid date and try next date format
     else:
         logging.warning(f"No date matches in {filename}. Copying to {settings.unsortable_dir}")
-    process_file(output_dir, file_path)
+    process_file(output_dir, file_path) and process_file(guessed_output, file_path) and removed_nodate_file(file_path)
 
 
 if len(sys.argv) > 1:
